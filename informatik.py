@@ -22,11 +22,9 @@ playerIMG = pygame.image.load('img/spaceship.png')
 
 score = 0
 
-
-alien1 = pygame.image.load('img/alien1.png')
-alien2 = pygame.image.load('img/alien2.png')
-alien3 = pygame.image.load('img/alien3.png')
-enemyIMGS = [alien1, alien2, alien3]
+alien1img = pygame.image.load('img/alien1.png')
+alien2img = pygame.image.load('img/alien2.png')
+alien3img = pygame.image.load('img/alien3.png')
 # enemyIMGS = ['img/alien1.png', 'img/alien2.png', 'img/alien3.png']
 enemyIMG = []
 enemyX = []
@@ -37,7 +35,6 @@ enemy_count = 15
 # enemyIMG = random.choices(enemyIMGS, weights=[1, 1, 1], k=15)
 
 for i in range(enemy_count):
-    enemyIMG.append((enemyIMGS[random.randint(0, 2)]))
     enemyX.append(random.randint(0, 800-64))
     enemyY.append(random.randint(50, 150))
     enemyXchange.append(0.15)
@@ -59,8 +56,19 @@ def player(x, y):
     window.blit(playerIMG, (x, y))
 
 
-def enemy(x, y):
-    window.blit(enemyIMG[random.randint(0, 3)], (x, y))
+def alien1(x, y):
+    window.blit(alien1img, (x, y))
+
+
+def alien2(x, y):
+    window.blit(alien2img, (x, y))
+
+
+def alien3(x, y):
+    window.blit(alien3img, (x, y))
+
+
+# do one enemy function randomly chooses variable value depending on that blits different alien
 
 
 def fire_bullet(x, y):
@@ -70,21 +78,17 @@ def fire_bullet(x, y):
 
 
 def collision_detection_bullet(enemyX, enemyY, bulletX, bulletY):
-    coll_bullet = math.sqrt((math.pow(bulletX+32/2 - enemyX+32/2, 2)) +
-                            math.pow(bulletY+32/2 - enemyY+32/2, 2))
+    coll_bullet = math.sqrt(math.pow(bulletX+16 - enemyX+16, 2) +
+                            math.pow(bulletY+16 - enemyY+16, 2))
     if coll_bullet < 20:
         return True
-    else:
-        return False
 
 
 def collision_detection_player(playerX, playerY, enemyX, enemyY):
-    coll_enemy = math.sqrt((math.pow(playerX+32 - enemyX+32/2, 2)) +
-                           math.pow(playerY+32 - enemyY+32/2, 2))
-    if coll_enemy < 32:
+    coll_enemy = math.sqrt(math.pow(playerX+32 - enemyX+16, 2) +
+                           math.pow(playerY+32 - enemyY+16, 2))
+    if coll_enemy < 48:
         return True
-    else:
-        return False
 
 
 def score_text(x, y):
@@ -211,7 +215,7 @@ def game():
                 enemyX[i] = random.randint(0, 800-64)
                 enemyY[i] = random.randint(50, 150)
 
-            enemy(enemyX[i], enemyY[i])
+            alien1(enemyX[i], enemyY[i])
 
             collision_player = collision_detection_player(
                 playerX, playerY, enemyX[i], enemyY[i])
