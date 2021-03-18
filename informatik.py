@@ -2,6 +2,7 @@ import pygame
 import random
 import math
 import time
+import sqlite3
 
 from pygame import display
 
@@ -51,6 +52,10 @@ textY = 10
 
 bullet_state = 'ready'
 
+conn = sqlite3.connect('highscores/highscores.db')
+c = conn.cursor()
+c.execute('CREATE TABLE IF NOT EXISTS highscores(Score INTEGER)')
+
 
 def player(x, y):
     window.blit(playerIMG, (x, y))
@@ -68,6 +73,21 @@ def alien3(x, y):
     window.blit(alien3img, (x, y))
 
 
+def alienchoice():
+    counter = 10
+    alien1 = random.randint(0, counter)
+    counter -= alien1
+    alien2 = random.randint(0, counter)
+    counter -= alien2
+    alien3 = counter
+    for i in range(alien1):
+        alien1()
+    for i in range(alien2):
+        alien2()
+    for i in range(alien3):
+        alien3()
+
+
 # do one enemy function randomly chooses variable value depending on that blits different alien
 
 
@@ -78,16 +98,16 @@ def fire_bullet(x, y):
 
 
 def collision_detection_bullet(enemyX, enemyY, bulletX, bulletY):
-    coll_bullet = math.sqrt(math.pow(bulletX+16 - enemyX+16, 2) +
-                            math.pow(bulletY+16 - enemyY+16, 2))
-    if coll_bullet < 20:
+    distance = math.sqrt(math.pow(bulletX+16 - enemyX+16, 2) +
+                         math.pow(bulletY+16 - enemyY+16, 2))
+    if distance < 20:
         return True
 
 
-def collision_detection_player(playerX, playerY, enemyX, enemyY):
-    coll_enemy = math.sqrt(math.pow(playerX+32 - enemyX+16, 2) +
-                           math.pow(playerY+32 - enemyY+16, 2))
-    if coll_enemy < 48:
+def collision_detection_player(plrX, plrY, eneX, eneY):
+    distance = math.sqrt(math.pow(plrX - eneX+16, 2) +
+                         math.pow(plrY - eneY+16, 2))
+    if distance < 32:
         return True
 
 
@@ -151,7 +171,7 @@ def game_over():
 def game():
     global score
     global bullet_state
-    playerX = 400 - 64/2
+    playerX = 400 - 32
     playerY = 480
     playerXchange = 0
     bulletX = 0
@@ -198,11 +218,11 @@ def game():
             playerX = 800 - 64
 
         for i in range(enemy_count):
-            enemyX[i] += enemyXchange[i]
             if enemyX[i] <= 0:
                 enemyXchange[i] = 0.1
-            if enemyX[i] >= 800 - 64:
+            elif enemyX[i] >= 800 - 32:
                 enemyXchange[i] = -0.1
+            enemyX[i] += enemyXchange[i]
             enemyY[i] += enemyYchange[i]
 
             collision_bullet = collision_detection_bullet(
@@ -220,20 +240,17 @@ def game():
             collision_player = collision_detection_player(
                 playerX, playerY, enemyX[i], enemyY[i])
 
-            if enemyY[i] >= 600 + 16 or collision_player:
+            if enemyY[i] >= 616 or collision_player:
                 # print(f'Your final score is {score}!')
                 for j in range(enemy_count):
                     enemyXchange[j] = 0
                     enemyYchange[j] = 0
                     enemyX[j] = 1000
-                    enemyY[j] = 0
+                c.execute("INSERT INTO highscores(Score) VALUES(?)",
+                          (score,))
+                conn.commit()
                 game_over()
-                running = False
-
-        # if enemyY <= 50:
-        #     enemyYchange = 0.01
-        # if enemyY >= 150:
-        #     enemyYchange = -0.01
+                # running = False
 
         if bullet_state == 'fire':
             fire_bullet(bulletX, bulletY)
