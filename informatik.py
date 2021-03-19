@@ -4,6 +4,8 @@ import math
 import time
 import sqlite3
 import threading
+import pandas
+from pygame.draw import line
 
 pygame.init()
 
@@ -24,7 +26,7 @@ playerIMG = pygame.image.load('img/spaceship.png')
 
 powerup_state = 'away'
 
-timevarpowerup = 15
+timevarpowerup = 0
 
 score = 0
 
@@ -50,7 +52,7 @@ bullet_state = 'ready'
 
 conn = sqlite3.connect('highscores/highscores.db')
 c = conn.cursor()
-c.execute('CREATE TABLE IF NOT EXISTS highscores(Score INTEGER)')
+c.execute('CREATE TABLE IF NOT EXISTS highscores(Score INTEGER, Names TEXT)')
 
 
 def player(x, y):
@@ -98,24 +100,40 @@ def score_text(x, y):
 
 
 def final_score():
-    global score
     score_text = font2.render(
         f'You scored {score} points this round!', True, (255, 255, 255))
     window.blit(score_text, (75, 250))
 
 
 def menu():
+    highscorestr = (pandas.read_sql_query(
+        "SELECT * FROM highscores ORDER BY score DESC LIMIT 3", conn).to_string(index=False).replace('Score', '')).replace('Names', '').splitlines()
     global running
-    running = True
     while running:
         click = False
-        for event in pygame.event.get():
+        event_list = pygame.event.get()
+        for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
+            if event.type == pygame.QUIT:
+                running = False
 
         window.fill((0, 0, 0))
         window.blit(background, (0, 0))
+
+        counter = -1
+
+        window.blit(
+            (font2.render('Highscores:', True, (255, 255, 255))), (400, 110))
+
+        for line in highscorestr:
+            counter += 1
+            window.blit(
+                (font2.render(line[3:], True, (255, 255, 255))), (400, 110+counter*55))
+        counter = 0
+        window.blit(
+            (font2.render('Space Invaders', True, (255, 255, 255))), (400, 50))
 
         button1 = pygame.Rect(30, 45, 280, 60)
         pygame.draw.rect(window, (52, 235, 177), button1, border_radius=20)
@@ -125,12 +143,12 @@ def menu():
         button2 = pygame.Rect(30, 115, 280, 60)
         pygame.draw.rect(window, (52, 235, 177), button2, border_radius=20)
         window.blit(
-            (font2.render('Start Game', True, (255, 255, 255))), (50, 50))
+            (font2.render('Guide', True, (255, 255, 255))), (50, 120))
 
         button3 = pygame.Rect(30, 185, 280, 60)
-        pygame.draw.rect(window, (52, 235, 177), button2, border_radius=20)
+        pygame.draw.rect(window, (52, 235, 177), button3, border_radius=20)
         window.blit(
-            (font2.render('Start Game', True, (255, 255, 255))), (50, 50))
+            (font2.render('Quit Game', True, (255, 255, 255))), (50, 190))
 
         if click:
             if button1.collidepoint(pygame.mouse.get_pos()):
@@ -138,23 +156,38 @@ def menu():
             elif button2.collidepoint(pygame.mouse.get_pos()):
                 print('button 2')
             elif button3.collidepoint(pygame.mouse.get_pos()):
-                print('button3')
-            else:
-                print('empty')
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+                pygame.quit()
 
         pygame.display.update()
 
 
 def game_over():
-    window.fill((0, 0, 0))
-    window.blit(background, (0, 0))
-    final_score()
-    pygame.display.update()
-    time.sleep(3)
+    global running
+    done = False
+    text = ''
+    while not done:
+        window.fill((0, 0, 0))
+        window.blit(background, (0, 0))
+        final_score()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    print(text)
+                    done = True
+                elif event.key == pygame.K_BACKSPACE:
+                    text = text[:-1]
+                else:
+                    text += event.unicode
+        window.blit(
+            (font2.render('Enter your name here:', True, (255, 255, 255))), (160, 300))
+        window.blit(
+            (font2.render(text, True, (255, 255, 255))), (330, 350))
+        pygame.display.update()
+    c.execute("INSERT INTO highscores(Score, Names) VALUES(?, ?)", (score, text))
+    conn.commit()
     menu()
 
 
@@ -244,15 +277,20 @@ def game():
 
             def counterpowerup():
                 global timevarpowerup
-                for i in range(timevarpowerup):
+                while timevarpowerup != 0:
                     timevarpowerup -= 1
                     time.sleep(1)
 
             timerpowerup = threading.Thread(target=counterpowerup)
 
+            global timevarpowerup
+
             if collision_powerup:
-                if timevarpowerup == 15:
+                if timevarpowerup == 0:
+                    timevarpowerup += 15
                     timerpowerup.start()
+                elif timevarpowerup > 0:
+                    timevarpowerup += 15
                 powerup_state = 'away'
                 powerupX = 1000
                 ability = random.choice(['playerspeed', 'bulletspeed'])
@@ -273,9 +311,6 @@ def game():
                     enemyXchange[j] = 0
                     enemyYchange[j] = 0
                     enemyX[j] = 1000
-                c.execute("INSERT INTO highscores(Score) VALUES(?)",
-                          (score,))
-                conn.commit()
                 game_over()
 
         if powerup_state == 'drop':
@@ -293,7 +328,7 @@ def game():
 
         player(playerX, playerY)
         score_text(textX, textY)
-        if timevarpowerup < 15 and timevarpowerup > 0:
+        if timevarpowerup > 0:
             window.blit(font.render(
                 f'Powerup time: {timevarpowerup}', True, (255, 255, 255)), (textX, textY+30))
         pygame.display.update()
