@@ -26,14 +26,14 @@ score = 0
 alien1img = pygame.image.load('img/alien1.png')
 alien2img = pygame.image.load('img/alien2.png')
 alien3img = pygame.image.load('img/alien3.png')
-# enemyIMGS = ['img/alien1.png', 'img/alien2.png', 'img/alien3.png']
+enemyIMGS = [alien1img, alien2img, alien3img]
 enemyIMG = []
 enemyX = []
 enemyY = []
 enemyXchange = []
 enemyYchange = []
 enemy_count = 15
-# enemyIMG = random.choices(enemyIMGS, weights=[1, 1, 1], k=15)
+enemyIMG = random.choices(enemyIMGS, weights=[1, 1, 1], k=enemy_count)
 
 for i in range(enemy_count):
     enemyX.append(random.randint(0, 800-64))
@@ -61,31 +61,31 @@ def player(x, y):
     window.blit(playerIMG, (x, y))
 
 
-def alien1(x, y):
-    window.blit(alien1img, (x, y))
+def aliens(x, y, img):
+    window.blit(img, (x, y))
 
 
-def alien2(x, y):
-    window.blit(alien2img, (x, y))
+# def alien2(x, y):
+#     window.blit(alien2img, (x, y))
 
 
-def alien3(x, y):
-    window.blit(alien3img, (x, y))
+# def alien3(x, y):
+#     window.blit(alien3img, (x, y))
 
 
-def alienchoice():
-    counter = 10
-    alien1 = random.randint(0, counter)
-    counter -= alien1
-    alien2 = random.randint(0, counter)
-    counter -= alien2
-    alien3 = counter
-    for i in range(alien1):
-        alien1()
-    for i in range(alien2):
-        alien2()
-    for i in range(alien3):
-        alien3()
+# def alienchoice():
+#     counter = 10
+#     alien1 = random.randint(0, counter)
+#     counter -= alien1
+#     alien2 = random.randint(0, counter)
+#     counter -= alien2
+#     alien3 = counter
+#     for i in range(alien1):
+#         alien1()
+#     for i in range(alien2):
+#         alien2()
+#     for i in range(alien3):
+#         alien3()
 
 
 # do one enemy function randomly chooses variable value depending on that blits different alien
@@ -234,8 +234,9 @@ def game():
                 # print(score)
                 enemyX[i] = random.randint(0, 800-64)
                 enemyY[i] = random.randint(50, 150)
+                enemyIMG[i] = random.choice(enemyIMGS)
 
-            alien1(enemyX[i], enemyY[i])
+            aliens(enemyX[i], enemyY[i], enemyIMG[i])
 
             collision_player = collision_detection_player(
                 playerX, playerY, enemyX[i], enemyY[i])
