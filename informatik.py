@@ -4,8 +4,6 @@ import math
 import time
 import sqlite3
 
-from pygame import display
-
 pygame.init()
 
 window = pygame.display.set_mode((800, 600))
