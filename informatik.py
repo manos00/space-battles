@@ -3,6 +3,7 @@ import random
 import math
 import time
 import sqlite3
+# import threading
 
 pygame.init()
 
@@ -33,14 +34,6 @@ enemyXchange = []
 enemyYchange = []
 enemy_count = 15
 enemyIMG = random.choices(enemyIMGS, weights=[33, 33, 33, 1], k=enemy_count)
-
-for i in range(enemy_count):
-    enemyX.append(random.randint(0, 800-64))
-    enemyY.append(random.randint(50, 150))
-    enemyXchange.append(0.15)
-    enemyYchange.append(0.02)
-    # print(enemyIMG[i])
-
 
 bulletIMG = pygame.image.load('img/bullet.png')
 
@@ -177,11 +170,10 @@ def game():
     score = 0
 
     for i in range(enemy_count):
-        enemyX[i] = (random.randint(0, 800-64))
-        enemyY[i] = (random.randint(50, 150))
-        enemyXchange[i] = 0.15
-        enemyYchange[i] = 0.02
-        # enemy(enemyX[i], enemyY[i])
+        enemyX.append(random.randint(0, 800-64))
+        enemyY.append(random.randint(50, 150))
+        enemyXchange.append(random.choice([0.15, -0.15]))
+        enemyYchange.append(0.02)
 
     global running
     while running and alive:
