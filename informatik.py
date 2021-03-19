@@ -32,7 +32,7 @@ enemyY = []
 enemyXchange = []
 enemyYchange = []
 enemy_count = 15
-enemyIMG = random.choices(enemyIMGS, weights=[5, 5, 5, 1], k=enemy_count)
+enemyIMG = random.choices(enemyIMGS, weights=[33, 33, 33, 1], k=enemy_count)
 
 for i in range(enemy_count):
     enemyX.append(random.randint(0, 800-64))
@@ -230,7 +230,8 @@ def game():
                 # print(score)
                 enemyX[i] = random.randint(0, 800-64)
                 enemyY[i] = random.randint(50, 150)
-                enemyIMG[i] = random.choice(enemyIMGS)
+                enemyIMG[i] = random.choices(
+                    enemyIMGS, weights=[33, 33, 33, 1], k=1)[0]
 
             aliens(enemyX[i], enemyY[i], enemyIMG[i])
 
