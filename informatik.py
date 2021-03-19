@@ -24,14 +24,15 @@ score = 0
 alien1img = pygame.image.load('img/alien1.png')
 alien2img = pygame.image.load('img/alien2.png')
 alien3img = pygame.image.load('img/alien3.png')
-enemyIMGS = [alien1img, alien2img, alien3img]
+ufoimg = pygame.image.load('img/ufo.png')
+enemyIMGS = [alien1img, alien2img, alien3img, ufoimg]
 enemyIMG = []
 enemyX = []
 enemyY = []
 enemyXchange = []
 enemyYchange = []
 enemy_count = 15
-enemyIMG = random.choices(enemyIMGS, weights=[1, 1, 1], k=enemy_count)
+enemyIMG = random.choices(enemyIMGS, weights=[5, 5, 5, 1], k=enemy_count)
 
 for i in range(enemy_count):
     enemyX.append(random.randint(0, 800-64))
@@ -84,9 +85,6 @@ def aliens(x, y, img):
 #         alien2()
 #     for i in range(alien3):
 #         alien3()
-
-
-# do one enemy function randomly chooses variable value depending on that blits different alien
 
 
 def fire_bullet(x, y):
