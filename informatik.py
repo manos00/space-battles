@@ -3,7 +3,7 @@ import random
 import math
 import time
 import sqlite3
-# import threading
+import threading
 
 pygame.init()
 
@@ -20,6 +20,10 @@ background = pygame.image.load('img/background.png')
 
 playerIMG = pygame.image.load('img/spaceship.png')
 
+powerup_state = 'away'
+
+timevar = 15
+
 score = 0
 
 alien1img = pygame.image.load('img/alien1.png')
@@ -28,14 +32,12 @@ alien3img = pygame.image.load('img/alien3.png')
 ufoimg = pygame.image.load('img/ufo.png')
 enemyIMGS = [alien1img, alien2img, alien3img, ufoimg]
 enemyIMG = []
-enemyX = []
-enemyY = []
-enemyXchange = []
-enemyYchange = []
 enemy_count = 15
 enemyIMG = random.choices(enemyIMGS, weights=[33, 33, 33, 1], k=enemy_count)
 
 bulletIMG = pygame.image.load('img/bullet.png')
+
+powerupimg = pygame.image.load('img/powerup.png')
 
 font = pygame.font.Font('arial.ttf', 25)
 font2 = pygame.font.Font('arial.ttf', 45)
@@ -86,6 +88,10 @@ def fire_bullet(x, y):
     window.blit(bulletIMG, (x + 32, y + 10))
 
 
+def drop_powerup(x, y):
+    window.blit(powerupimg, (x + 16, y + 16))
+
+
 def collision_detection_bullet(enemyX, enemyY, bulletX, bulletY):
     distance = math.sqrt(math.pow(bulletX+16 - enemyX+16, 2) +
                          math.pow(bulletY+16 - enemyY+16, 2))
@@ -96,6 +102,13 @@ def collision_detection_bullet(enemyX, enemyY, bulletX, bulletY):
 def collision_detection_player(plrX, plrY, eneX, eneY):
     distance = math.sqrt(math.pow(plrX - eneX+16, 2) +
                          math.pow(plrY - eneY+16, 2))
+    if distance < 32:
+        return True
+
+
+def collision_detection_powerup(plrX, plrY, powrupX, powrupY):
+    distance = math.sqrt(math.pow(plrX - powrupX+16, 2) +
+                         math.pow(plrY - powrupY+16, 2))
     if distance < 32:
         return True
 
@@ -160,14 +173,23 @@ def game_over():
 def game():
     global score
     global bullet_state
-    playerX = 400 - 32
+    global powerup_state
+    playerX = 368
     playerY = 480
     playerXchange = 0
     bulletX = 0
     bulletY = 480
-    bulletYchange = -1
     bullet_state = 'ready'
     score = 0
+    enemyX = []
+    enemyY = []
+    enemyXchange = []
+    enemyYchange = []
+    powerupX = 1000
+    powerupY = 0
+    powerupYchange = 0.2
+    pwrup1 = 0
+    pwrup2 = 0
 
     for i in range(enemy_count):
         enemyX.append(random.randint(0, 800-64))
@@ -186,10 +208,10 @@ def game():
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    playerXchange = -0.5
+                    playerXchange = -0.5 - pwrup1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    playerXchange = 0.5
+                    playerXchange = 0.5 + pwrup1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     if bullet_state == 'ready':
@@ -202,13 +224,13 @@ def game():
         playerX += playerXchange
         if playerX <= 0:
             playerX = 0
-        if playerX >= 800 - 64:
-            playerX = 800 - 64
+        if playerX >= 736:
+            playerX = 736
 
         for i in range(enemy_count):
             if enemyX[i] <= 0:
                 enemyXchange[i] = 0.1
-            elif enemyX[i] >= 800 - 32:
+            elif enemyX[i] >= 768:
                 enemyXchange[i] = -0.1
             enemyX[i] += enemyXchange[i]
             enemyY[i] += enemyYchange[i]
@@ -220,12 +242,41 @@ def game():
                 bullet_state = 'ready'
                 score += 1
                 # print(score)
-                enemyX[i] = random.randint(0, 800-64)
+                if enemyIMG[i] == ufoimg:
+                    powerup_state = 'drop'
+                    powerupX = enemyX[i]
+                    powerupY = enemyY[i]
+                enemyX[i] = random.randint(0, 736)
                 enemyY[i] = random.randint(50, 150)
                 enemyIMG[i] = random.choices(
                     enemyIMGS, weights=[33, 33, 33, 1], k=1)[0]
 
             aliens(enemyX[i], enemyY[i], enemyIMG[i])
+
+            collision_powerup = collision_detection_powerup(
+                playerX, playerY, powerupX, powerupY)
+
+            def counter():
+                global timevar
+                for i in range(timevar):
+                    timevar -= 1
+                    time.sleep(1)
+
+            timerdings = threading.Thread(target=counter)
+
+            if collision_powerup:
+                timerdings.start()
+                powerup_state = 'away'
+                powerupX = 1000
+                ability = random.choice(['playerspeed', 'bulletspeed'])
+                if ability == 'playerspeed':
+                    pwrup1 = 1
+                elif ability == 'bulletspeed':
+                    pwrup2 = 1
+
+            if timevar == 0:
+                pwrup1 = 0
+                pwrup2 = 0
 
             collision_player = collision_detection_player(
                 playerX, playerY, enemyX[i], enemyY[i])
@@ -242,8 +293,13 @@ def game():
                 game_over()
                 # running = False
 
+        if powerup_state == 'drop':
+            drop_powerup(powerupX, powerupY)
+            powerupY += powerupYchange
+
         if bullet_state == 'fire':
             fire_bullet(bulletX, bulletY)
+            bulletYchange = -1 - pwrup2
             bulletY += bulletYchange
 
         if bulletY <= -32:
