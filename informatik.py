@@ -140,7 +140,7 @@ def final_score():
 
 def menu():
     highscorestr = (pandas.read_sql_query(
-        "SELECT * FROM highscores ORDER BY score DESC LIMIT 5", conn).to_string(index=False).replace('Score', '')).replace('Names', '').splitlines()
+        "SELECT * FROM highscores ORDER BY score DESC LIMIT 5", conn).to_string(index=False).replace('Score', '')).replace('Names', '').replace('Empty DataFrame', '').replace('Columns: [, ]', '').replace('Index: []', '').splitlines()
     global running
     while running:
         click = False
