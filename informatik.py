@@ -16,7 +16,7 @@ window = pygame.display.set_mode((800, 600))
 
 running = True
 
-pygame.display.set_caption('iNfOrMaTiK pRoJeKt')
+pygame.display.set_caption('SPACE BATTLES')
 icon = pygame.image.load('img/icon.png')
 pygame.display.set_icon(icon)
 
@@ -90,7 +90,7 @@ def collision_detection_player(plrX, plrY, eneX, eneY):
 def collision_detection_powerup(plrX, plrY, powrupX, powrupY):
     distance = math.sqrt(math.pow(plrX - powrupX+16, 2) +
                          math.pow(plrY - powrupY+16, 2))
-    if distance < 32:
+    if distance < 40:
         return True
 
 
@@ -107,7 +107,7 @@ def final_score():
 
 def menu():
     highscorestr = (pandas.read_sql_query(
-        "SELECT * FROM highscores ORDER BY score DESC LIMIT 3", conn).to_string(index=False).replace('Score', '')).replace('Names', '').splitlines()
+        "SELECT * FROM highscores ORDER BY score DESC LIMIT 5", conn).to_string(index=False).replace('Score', '')).replace('Names', '').splitlines()
     global running
     while running:
         click = False
@@ -133,7 +133,7 @@ def menu():
                 (font2.render(line[3:], True, (255, 255, 255))), (400, 110+counter*55))
         counter = 0
         window.blit(
-            (font2.render('Space Invaders', True, (255, 255, 255))), (400, 50))
+            (font2.render('Space Battles', True, (255, 255, 255))), (400, 50))
 
         button1 = pygame.Rect(30, 45, 280, 60)
         pygame.draw.rect(window, (52, 235, 177), button1, border_radius=20)
@@ -154,10 +154,57 @@ def menu():
             if button1.collidepoint(pygame.mouse.get_pos()):
                 game()
             elif button2.collidepoint(pygame.mouse.get_pos()):
-                print('button 2')
+                guide()
             elif button3.collidepoint(pygame.mouse.get_pos()):
-                pygame.quit()
+                running = False
 
+        pygame.display.update()
+
+
+def guide():
+    global running
+    while running:
+        click = False
+        event_list = pygame.event.get()
+        for event in event_list:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+            if event.type == pygame.QUIT:
+                running = False
+        window.fill((0, 0, 0))
+        window.blit(background, (0, 0))
+        button = pygame.Rect(30, 515, 280, 60)
+        pygame.draw.rect(window, (52, 235, 177), button, border_radius=20)
+        window.blit(
+            (font2.render('Back', True, (255, 255, 255))), (50, 520))
+        if click:
+            if button.collidepoint(pygame.mouse.get_pos()):
+                menu()
+        window.blit(
+            (font.render('Kill the Aliens by moving around with the arrow keys and', True, (255, 255, 255))), (50, 50))
+        window.blit(
+            (font.render('shooting by pressing the spacebar.', True, (255, 255, 255))), (50, 75))
+        window.blit(
+            (font.render('There’s a 1\% chance of an UFO spawning', True, (255, 255, 255))), (50, 125))
+        window.blit(
+            (font.render('When killed it drops a powerup which either makes you move', True, (255, 255, 255))), (50, 175))
+        window.blit(
+            (font.render('faster or lets you shoot faster for 15 seconds.', True, (255, 255, 255))), (50, 200))
+        window.blit(
+            (font.render('At the end of a round, your final score will be', True, (255, 255, 255))), (50, 250))
+        window.blit(
+            (font.render('displayed, and you can either press ‘ESC’ to', True, (255, 255, 255))), (50, 275))
+        window.blit(
+            (font.render('instantly return to the main menu or enter your name.', True, (255, 255, 255))), (50, 300))
+        window.blit(
+            (font.render('If you choose to enter your name, by hitting ‘Return’,', True, (255, 255, 255))), (50, 325))
+        window.blit(
+            (font.render('you can save your Score under your name.', True, (255, 255, 255))), (50, 350))
+        window.blit(
+            (font.render('The top 5 highest scores will be displayed', True, (255, 255, 255))), (50, 375))
+        window.blit(
+            (font.render('on the right side of the main menu.', True, (255, 255, 255))), (50, 400))
         pygame.display.update()
 
 
@@ -175,10 +222,13 @@ def game_over():
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    print(text)
                     done = True
                 elif event.key == pygame.K_BACKSPACE:
                     text = text[:-1]
+                elif event.key == pygame.K_ESCAPE:
+                    menu()
+                    done = True
+                    break
                 else:
                     text += event.unicode
         window.blit(
