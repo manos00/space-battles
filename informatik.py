@@ -256,6 +256,9 @@ def game_over():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     done = True
+                    c.execute(
+                        "INSERT INTO highscores(Score, Names) VALUES(?, ?)", (score, text))
+                    conn.commit()
                 elif event.key == pygame.K_BACKSPACE:
                     text = text[:-1]
                 elif event.key == pygame.K_ESCAPE:
@@ -269,8 +272,6 @@ def game_over():
         window.blit(
             (font2.render(text, True, (255, 255, 255))), (330, 350))
         pygame.display.update()
-    c.execute("INSERT INTO highscores(Score, Names) VALUES(?, ?)", (score, text))
-    conn.commit()
     menu()
 
 
