@@ -1,13 +1,41 @@
 import pygame
+import platform
 import random
 import math
 import time
 import sqlite3
 import threading
 import pandas
+import os
+import git
 from pygame.draw import line
 
 pygame.init()
+
+if platform.system() == 'Windows':
+    appdata = os.environ.get('appdata')
+    spacebattles = appdata+'space batlles'
+    img = spacebattles+'/img'
+    db = spacebattles+'/highscores'
+
+    if not os.path.exists(spacebattles):
+        os.mkdir(spacebattles)
+    if not os.path.exists(img):
+        os.mkdir(img)
+    if not os.path.exists(db):
+        os.mkdir(db)
+    
+    alien1path = img+'/alien1.png'
+    alien2path = img+'/alien2.png'
+    alien3path = img+'/alien3.png'
+    ufopath = img+'/ufo.png'
+    iconpath = img+'/icon.png'
+    bulletpath = img+'/bullet.png'
+    backgroundpath = img+'img/background.png'
+    spaceshippath = img+'/spaceship.png'
+    poweruppath = img+'/powerup.png'
+    fontpath = 'arial.ttf'
+    databasepath = db+'/highscores.db'
 
 window = pygame.display.set_mode((800, 600))
 
@@ -17,12 +45,12 @@ window = pygame.display.set_mode((800, 600))
 running = True
 
 pygame.display.set_caption('SPACE BATTLES')
-icon = pygame.image.load('img/icon.png')
+icon = pygame.image.load(iconpath)
 pygame.display.set_icon(icon)
 
-background = pygame.image.load('img/background.png')
+background = pygame.image.load(backgroundpath)
 
-playerIMG = pygame.image.load('img/spaceship.png')
+playerIMG = pygame.image.load(spaceshippath)
 
 powerup_state = 'away'
 
@@ -30,27 +58,27 @@ timevarpowerup = 0
 
 score = 0
 
-alien1img = pygame.image.load('img/alien1.png')
-alien2img = pygame.image.load('img/alien2.png')
-alien3img = pygame.image.load('img/alien3.png')
-ufoimg = pygame.image.load('img/ufo.png')
+alien1img = pygame.image.load(alien1path)
+alien2img = pygame.image.load(alien2path)
+alien3img = pygame.image.load(alien3path)
+ufoimg = pygame.image.load(ufopath)
 enemyIMGS = [alien1img, alien2img, alien3img, ufoimg]
 enemyIMG = []
 enemy_count = 15
 enemyIMG = random.choices(enemyIMGS, weights=[33, 33, 33, 1], k=enemy_count)
 
-bulletIMG = pygame.image.load('img/bullet.png')
+bulletIMG = pygame.image.load(bulletpath)
 
-powerupimg = pygame.image.load('img/powerup.png')
+powerupimg = pygame.image.load(poweruppath)
 
-font = pygame.font.Font('arial.ttf', 25)
-font2 = pygame.font.Font('arial.ttf', 45)
+font = pygame.font.Font(fontpath, 25)
+font2 = pygame.font.Font(fontpath, 45)
 textX = 10
 textY = 10
 
 bullet_state = 'ready'
 
-conn = sqlite3.connect('highscores/highscores.db')
+conn = sqlite3.connect(databasepath)
 c = conn.cursor()
 c.execute('CREATE TABLE IF NOT EXISTS highscores(Score INTEGER, Names TEXT)')
 
