@@ -25,7 +25,7 @@ if platform.system() == 'Windows':
     backgroundpath = img+'/background.png'
     spaceshippath = img+'/spaceship.png'
     poweruppath = img+'/powerup.png'
-    fontpath = 'arial.ttf'
+    fontpath = spacebattles+'/arial.ttf'
     databasepath = db+'/highscores.db'
 else:
     img = '/img'
