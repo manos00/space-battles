@@ -7,31 +7,36 @@ import sqlite3
 import threading
 import pandas
 import os
-import git
 from pygame.draw import line
 
 pygame.init()
 
 if platform.system() == 'Windows':
     appdata = os.environ.get('appdata')
-    spacebattles = appdata+'space batlles'
+    spacebattles = appdata+'/space-battles'
     img = spacebattles+'/img'
     db = spacebattles+'/highscores'
-
-    if not os.path.exists(spacebattles):
-        os.mkdir(spacebattles)
-    if not os.path.exists(img):
-        os.mkdir(img)
-    if not os.path.exists(db):
-        os.mkdir(db)
-    
     alien1path = img+'/alien1.png'
     alien2path = img+'/alien2.png'
     alien3path = img+'/alien3.png'
     ufopath = img+'/ufo.png'
     iconpath = img+'/icon.png'
     bulletpath = img+'/bullet.png'
-    backgroundpath = img+'img/background.png'
+    backgroundpath = img+'/background.png'
+    spaceshippath = img+'/spaceship.png'
+    poweruppath = img+'/powerup.png'
+    fontpath = 'arial.ttf'
+    databasepath = db+'/highscores.db'
+else:
+    img = '/img'
+    db = '/highscores'
+    alien1path = '/alien1.png'
+    alien2path = img+'/alien2.png'
+    alien3path = img+'/alien3.png'
+    ufopath = img+'/ufo.png'
+    iconpath = img+'/icon.png'
+    bulletpath = img+'/bullet.png'
+    backgroundpath = img+'/background.png'
     spaceshippath = img+'/spaceship.png'
     poweruppath = img+'/powerup.png'
     fontpath = 'arial.ttf'
