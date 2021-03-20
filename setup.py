@@ -3,7 +3,6 @@ import git
 import platform
 import winshell
 import win32com.client
-import pythoncom
 
 desktop = winshell.desktop()
 
