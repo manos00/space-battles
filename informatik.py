@@ -298,7 +298,7 @@ def game():
     pwrup2 = 0
 
     for i in range(enemy_count):
-        enemyX.append(random.randint(0, 800-64))
+        enemyX.append(random.randint(0, 800-32))
         enemyY.append(random.randint(50, 150))
         enemyXchange.append(random.choice([0.15, -0.15]))
         enemyYchange.append(0.02)
