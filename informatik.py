@@ -186,7 +186,7 @@ def guide():
         window.blit(
             (font.render('shooting by pressing the spacebar.', True, (255, 255, 255))), (50, 75))
         window.blit(
-            (font.render('There’s a 1\% chance of an UFO spawning', True, (255, 255, 255))), (50, 125))
+            (font.render('There’s a 1% chance of an UFO spawning', True, (255, 255, 255))), (50, 125))
         window.blit(
             (font.render('When killed it drops a powerup which either makes you move', True, (255, 255, 255))), (50, 175))
         window.blit(
