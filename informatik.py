@@ -1,3 +1,4 @@
+#!/bin/env python3
 import pygame
 import platform
 import random
@@ -28,9 +29,9 @@ if platform.system() == 'Windows':
     fontpath = spacebattles+'/arial.ttf'
     databasepath = db+'/highscores.db'
 else:
-    img = '/img'
-    db = '/highscores'
-    alien1path = '/alien1.png'
+    img = './img'
+    db = './highscores'
+    alien1path = img+'/alien1.png'
     alien2path = img+'/alien2.png'
     alien3path = img+'/alien3.png'
     ufopath = img+'/ufo.png'
@@ -39,7 +40,7 @@ else:
     backgroundpath = img+'/background.png'
     spaceshippath = img+'/spaceship.png'
     poweruppath = img+'/powerup.png'
-    fontpath = 'arial.ttf'
+    fontpath = './arial.ttf'
     databasepath = db+'/highscores.db'
 
 window = pygame.display.set_mode((800, 600))
