@@ -1,19 +1,19 @@
 #!/bin/env python3
 import pygame
-import platform
+from platform import system
 import random
-import math
-import time
-import sqlite3
-import threading
-import pandas
-import os
+from math import sqrt, pow
+from time import sleep
+from sqlite3 import connect
+from threading import Thread
+from pandas import read_sql_query
+from os import mkdir, environ, path
 from pygame.draw import line
 
 pygame.init()
 
-if platform.system() == 'Windows':
-    appdata = os.environ.get('appdata')
+if system() == 'Windows':
+    appdata = environ.get('appdata')
     spacebattles = appdata+'/space-battles'
     img = spacebattles+'/img'
     db = spacebattles+'/highscores'
@@ -28,6 +28,8 @@ if platform.system() == 'Windows':
     poweruppath = img+'/powerup.png'
     fontpath = spacebattles+'/arial.ttf'
     databasepath = db+'/highscores.db'
+    if not path.exists(db):
+         mkdir(db)
 else:
     img = './img'
     db = './highscores'
@@ -42,11 +44,13 @@ else:
     poweruppath = img+'/powerup.png'
     fontpath = './arial.ttf'
     databasepath = db+'/highscores.db'
+    if not path.exists(db):
+        mkdir(db)
 
 window = pygame.display.set_mode((800, 600))
 
 # clock = pygame.time.Clock()
-# clock.tick(60)
+# clock.tick(600)
 
 running = True
 
@@ -84,7 +88,7 @@ textY = 10
 
 bullet_state = 'ready'
 
-conn = sqlite3.connect(databasepath)
+conn = connect(databasepath)
 c = conn.cursor()
 c.execute('CREATE TABLE IF NOT EXISTS highscores(Score INTEGER, Names TEXT)')
 
@@ -108,22 +112,22 @@ def drop_powerup(x, y):
 
 
 def collision_detection_bullet(enemyX, enemyY, bulletX, bulletY):
-    distance = math.sqrt(math.pow(bulletX+16 - enemyX+16, 2) +
-                         math.pow(bulletY+16 - enemyY+16, 2))
+    distance = sqrt(pow(bulletX+16 - enemyX+16, 2) +
+                         pow(bulletY+16 - enemyY+16, 2))
     if distance < 20:
         return True
 
 
 def collision_detection_player(plrX, plrY, eneX, eneY):
-    distance = math.sqrt(math.pow(plrX - eneX+16, 2) +
-                         math.pow(plrY - eneY+16, 2))
+    distance = sqrt(pow(plrX - eneX+16, 2) +
+                         pow(plrY - eneY+16, 2))
     if distance < 32:
         return True
 
 
 def collision_detection_powerup(plrX, plrY, powrupX, powrupY):
-    distance = math.sqrt(math.pow(plrX - powrupX+16, 2) +
-                         math.pow(plrY - powrupY+16, 2))
+    distance = sqrt(pow(plrX - powrupX+16, 2) +
+                         pow(plrY - powrupY+16, 2))
     if distance < 40:
         return True
 
@@ -140,7 +144,7 @@ def final_score():
 
 
 def menu():
-    highscorestr = (pandas.read_sql_query(
+    highscorestr = (read_sql_query(
         "SELECT * FROM highscores ORDER BY score DESC LIMIT 5", conn).to_string(index=False).replace('Score', '')).replace('Names', '').replace('Empty DataFrame', '').replace('Columns: [, ]', '').replace('Index: []', '').splitlines()
     global running
     while running:
@@ -364,9 +368,9 @@ def game():
                 global timevarpowerup
                 while timevarpowerup != 0:
                     timevarpowerup -= 1
-                    time.sleep(1)
+                    sleep(1)
 
-            timerpowerup = threading.Thread(target=counterpowerup)
+            timerpowerup = Thread(target=counterpowerup)
 
             global timevarpowerup
 
