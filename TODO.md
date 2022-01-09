@@ -5,8 +5,10 @@
 - [ ] edit readme
 - [ ] create proper setup
 ### main.py
-- [ ] clean up in general
+
+- [ ] use pygame.time.Clock()
 ## done
 
 - [x] change name to main.py
 - [x] mkdir highscores
+- [x] clean up in general
