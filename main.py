@@ -1,5 +1,5 @@
 #!/bin/env python3
-import pygame
+
 from platform import system
 import random
 from math import sqrt, pow
@@ -12,84 +12,62 @@ from pygame.draw import line
 
 pygame.init()
 
-if system() == 'Windows':
-    appdata = environ.get('appdata')
-    spacebattles = appdata+'/space-battles'
-    img = spacebattles+'/img'
-    db = spacebattles+'/highscores'
-    alien1path = img+'/alien1.png'
-    alien2path = img+'/alien2.png'
-    alien3path = img+'/alien3.png'
-    ufopath = img+'/ufo.png'
-    iconpath = img+'/icon.png'
-    bulletpath = img+'/bullet.png'
-    backgroundpath = img+'/background.png'
-    spaceshippath = img+'/spaceship.png'
-    poweruppath = img+'/powerup.png'
-    fontpath = spacebattles+'/arial.ttf'
-    databasepath = db+'/highscores.db'
-    if not path.exists(db):
-         mkdir(db)
-else:
-    img = './img'
-    db = './highscores'
-    alien1path = img+'/alien1.png'
-    alien2path = img+'/alien2.png'
-    alien3path = img+'/alien3.png'
-    ufopath = img+'/ufo.png'
-    iconpath = img+'/icon.png'
-    bulletpath = img+'/bullet.png'
-    backgroundpath = img+'/background.png'
-    spaceshippath = img+'/spaceship.png'
-    poweruppath = img+'/powerup.png'
-    fontpath = './arial.ttf'
-    databasepath = db+'/highscores.db'
-    if not path.exists(db):
-        mkdir(db)
+img='./img'
+db='./highscores'
+alien1path=img+'/alien1.png'
+alien2path=img+'/alien2.png'
+alien3path=img+'/alien3.png'
+ufopath=img+'/ufo.png'
+iconpath=img+'/icon.png'
+bulletpath=img+'/bullet.png'
+backgroundpath=img+'/background.png'
+spaceshippath=img+'/spaceship.png'
+poweruppath=img+'/powerup.png'
+fontpath='./arial.ttf'
+databasepath=db+'/highscores.db'
+if not path.exists(db):
+    mkdir(db)
 
-window = pygame.display.set_mode((800, 600))
+window=pygame.display.set_mode((800, 600))
 
-# clock = pygame.time.Clock()
-# clock.tick(600)
-
-running = True
+running=True
 
 pygame.display.set_caption('SPACE BATTLES')
-icon = pygame.image.load(iconpath)
+icon=pygame.image.load(iconpath)
 pygame.display.set_icon(icon)
 
-background = pygame.image.load(backgroundpath)
+background=pygame.image.load(backgroundpath)
 
-playerIMG = pygame.image.load(spaceshippath)
+playerIMG=pygame.image.load(spaceshippath)
 
-powerup_state = 'away'
+powerup_state='away'
 
-timevarpowerup = 0
+timevarpowerup=0
 
-score = 0
+score=0
 
-alien1img = pygame.image.load(alien1path)
-alien2img = pygame.image.load(alien2path)
-alien3img = pygame.image.load(alien3path)
-ufoimg = pygame.image.load(ufopath)
-enemyIMGS = [alien1img, alien2img, alien3img, ufoimg]
-enemyIMG = []
-enemy_count = 15
-enemyIMG = random.choices(enemyIMGS, weights=[33, 33, 33, 1], k=enemy_count)
+alien1img=pygame.image.load(alien1path)
+alien2img=pygame.image.load(alien2path)
+alien3img=pygame.image.load(alien3path)
+ufoimg=pygame.image.load(ufopath)
+enemyIMGS=[alien1img, alien2img, alien3img, ufoimg]
+enemyIMG=[]
+enemy_count=15
+enemyIMG=random.choices(enemyIMGS, weights=[33, 33, 33, 1], k=enemy_count)
 
-bulletIMG = pygame.image.load(bulletpath)
+bulletIMG=pygame.image.load(bulletpath)
 
-powerupimg = pygame.image.load(poweruppath)
+powerupimg=pygame.image.load(poweruppath)
 
-font = pygame.font.Font(fontpath, 25)
-font2 = pygame.font.Font(fontpath, 45)
-textX = 10
-textY = 10
+font=pygame.font.Font(fontpath, 25)
+font2=pygame.font.Font(fontpath, 45)
+textX=10
+textY=10
 
-bullet_state = 'ready'
+bullet_state='ready'
 
-conn = connect(databasepath)
-c = conn.cursor()
+conn=connect(databasepath)
+c=conn.cursor()
 c.execute('CREATE TABLE IF NOT EXISTS highscores(Score INTEGER, Names TEXT)')
 
 
@@ -103,7 +81,7 @@ def aliens(x, y, img):
 
 def fire_bullet(x, y):
     global bullet_state
-    bullet_state = 'fire'
+    bullet_state='fire'
     window.blit(bulletIMG, (x + 32, y + 10))
 
 
@@ -112,55 +90,55 @@ def drop_powerup(x, y):
 
 
 def collision_detection_bullet(enemyX, enemyY, bulletX, bulletY):
-    distance = sqrt(pow(bulletX+16 - enemyX+16, 2) +
+    distance=sqrt(pow(bulletX+16 - enemyX+16, 2) +
                          pow(bulletY+16 - enemyY+16, 2))
     if distance < 20:
         return True
 
 
 def collision_detection_player(plrX, plrY, eneX, eneY):
-    distance = sqrt(pow(plrX - eneX+16, 2) +
+    distance=sqrt(pow(plrX - eneX+16, 2) +
                          pow(plrY - eneY+16, 2))
     if distance < 32:
         return True
 
 
 def collision_detection_powerup(plrX, plrY, powrupX, powrupY):
-    distance = sqrt(pow(plrX - powrupX+16, 2) +
+    distance=sqrt(pow(plrX - powrupX+16, 2) +
                          pow(plrY - powrupY+16, 2))
     if distance < 40:
         return True
 
 
 def score_text(x, y):
-    score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+    score_text=font.render(f'Score: {score}', True, (255, 255, 255))
     window.blit(score_text, (x, y))
 
 
 def final_score():
-    score_text = font2.render(
+    score_text=font2.render(
         f'You scored {score} points this round!', True, (255, 255, 255))
     window.blit(score_text, (75, 250))
 
 
 def menu():
-    highscorestr = (read_sql_query(
+    highscorestr=(read_sql_query(
         "SELECT * FROM highscores ORDER BY score DESC LIMIT 5", conn).to_string(index=False).replace('Score', '')).replace('Names', '').replace('Empty DataFrame', '').replace('Columns: [, ]', '').replace('Index: []', '').splitlines()
     global running
     while running:
-        click = False
-        event_list = pygame.event.get()
+        click=False
+        event_list=pygame.event.get()
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    click = True
+                    click=True
             if event.type == pygame.QUIT:
-                running = False
+                running=False
 
         window.fill((0, 0, 0))
         window.blit(background, (0, 0))
 
-        counter = -1
+        counter=-1
 
         window.blit(
             (font2.render('Highscores:', True, (255, 255, 255))), (400, 110))
@@ -169,21 +147,21 @@ def menu():
             counter += 1
             window.blit(
                 (font2.render(line[3:], True, (255, 255, 255))), (400, 110+counter*55))
-        counter = 0
+        counter=0
         window.blit(
             (font2.render('Space Battles', True, (255, 255, 255))), (400, 50))
 
-        button1 = pygame.Rect(30, 45, 280, 60)
+        button1=pygame.Rect(30, 45, 280, 60)
         pygame.draw.rect(window, (52, 235, 177), button1, border_radius=20)
         window.blit(
             (font2.render('Start Game', True, (255, 255, 255))), (50, 50))
 
-        button2 = pygame.Rect(30, 115, 280, 60)
+        button2=pygame.Rect(30, 115, 280, 60)
         pygame.draw.rect(window, (52, 235, 177), button2, border_radius=20)
         window.blit(
             (font2.render('Guide', True, (255, 255, 255))), (50, 120))
 
-        button3 = pygame.Rect(30, 185, 280, 60)
+        button3=pygame.Rect(30, 185, 280, 60)
         pygame.draw.rect(window, (52, 235, 177), button3, border_radius=20)
         window.blit(
             (font2.render('Quit Game', True, (255, 255, 255))), (50, 190))
@@ -194,7 +172,7 @@ def menu():
             elif button2.collidepoint(pygame.mouse.get_pos()):
                 guide()
             elif button3.collidepoint(pygame.mouse.get_pos()):
-                running = False
+                running=False
 
         pygame.display.update()
 
@@ -202,17 +180,17 @@ def menu():
 def guide():
     global running
     while running:
-        click = False
-        event_list = pygame.event.get()
+        click=False
+        event_list=pygame.event.get()
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    click = True
+                    click=True
             if event.type == pygame.QUIT:
-                running = False
+                running=False
         window.fill((0, 0, 0))
         window.blit(background, (0, 0))
-        button = pygame.Rect(30, 515, 280, 60)
+        button=pygame.Rect(30, 515, 280, 60)
         pygame.draw.rect(window, (52, 235, 177), button, border_radius=20)
         window.blit(
             (font2.render('Back', True, (255, 255, 255))), (50, 520))
@@ -248,27 +226,27 @@ def guide():
 
 def game_over():
     global running
-    done = False
-    text = ''
+    done=False
+    text=''
     while not done:
         window.fill((0, 0, 0))
         window.blit(background, (0, 0))
         final_score()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                done = True
-                running = False
+                done=True
+                running=False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    done = True
+                    done=True
                     c.execute(
                         "INSERT INTO highscores(Score, Names) VALUES(?, ?)", (score, text))
                     conn.commit()
                 elif event.key == pygame.K_BACKSPACE:
-                    text = text[:-1]
+                    text=text[:-1]
                 elif event.key == pygame.K_ESCAPE:
                     menu()
-                    done = True
+                    done=True
                     break
                 else:
                     text += event.unicode
@@ -285,22 +263,22 @@ def game():
     global bullet_state
     global powerup_state
     global running
-    playerX = 368
-    playerY = 480
-    playerXchange = 0
-    bulletX = 0
-    bulletY = 480
-    bullet_state = 'ready'
-    score = 0
-    enemyX = []
-    enemyY = []
-    enemyXchange = []
-    enemyYchange = []
-    powerupX = 1000
-    powerupY = 0
-    powerupYchange = 0.2
-    pwrup1 = 0
-    pwrup2 = 0
+    playerX=368
+    playerY=480
+    playerXchange=0
+    bulletX=0
+    bulletY=480
+    bullet_state='ready'
+    score=0
+    enemyX=[]
+    enemyY=[]
+    enemyXchange=[]
+    enemyYchange=[]
+    powerupX=1000
+    powerupY=0
+    powerupYchange=0.2
+    pwrup1=0
+    pwrup2=0
 
     for i in range(enemy_count):
         enemyX.append(random.randint(0, 800-32))
@@ -314,54 +292,54 @@ def game():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                running=False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    playerXchange = -0.5 - pwrup1
+                    playerXchange=-0.5 - pwrup1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    playerXchange = 0.5 + pwrup1
+                    playerXchange=0.5 + pwrup1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     if bullet_state == 'ready':
-                        bulletX = playerX - 16
+                        bulletX=playerX - 16
                         fire_bullet(bulletX, bulletY)
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
-                    playerXchange = 0
+                    playerXchange=0
 
         playerX += playerXchange
         if playerX <= 0:
-            playerX = 0
+            playerX=0
         if playerX >= 736:
-            playerX = 736
+            playerX=736
 
         for i in range(enemy_count):
             if enemyX[i] < 0:
-                enemyXchange[i] = 0.1
+                enemyXchange[i]=0.1
             elif enemyX[i] > 768:
-                enemyXchange[i] = -0.1
+                enemyXchange[i]=-0.1
             enemyX[i] += enemyXchange[i]
             enemyY[i] += enemyYchange[i]
 
-            collision_bullet = collision_detection_bullet(
+            collision_bullet=collision_detection_bullet(
                 enemyX[i], enemyY[i], bulletX, bulletY)
             if collision_bullet and bullet_state == 'fire':
-                bulletY = 480
-                bullet_state = 'ready'
+                bulletY=480
+                bullet_state='ready'
                 score += 1
                 if enemyIMG[i] == ufoimg:
-                    powerup_state = 'drop'
-                    powerupX = enemyX[i]
-                    powerupY = enemyY[i]
-                enemyX[i] = random.randint(0, 736)
-                enemyY[i] = random.randint(50, 150)
-                enemyIMG[i] = random.choices(
+                    powerup_state='drop'
+                    powerupX=enemyX[i]
+                    powerupY=enemyY[i]
+                enemyX[i]=random.randint(0, 736)
+                enemyY[i]=random.randint(50, 150)
+                enemyIMG[i]=random.choices(
                     enemyIMGS, weights=[33, 33, 33, 1], k=1)[0]
 
             aliens(enemyX[i], enemyY[i], enemyIMG[i])
 
-            collision_powerup = collision_detection_powerup(
+            collision_powerup=collision_detection_powerup(
                 playerX, playerY, powerupX, powerupY)
 
             def counterpowerup():
@@ -370,7 +348,7 @@ def game():
                     timevarpowerup -= 1
                     sleep(1)
 
-            timerpowerup = Thread(target=counterpowerup)
+            timerpowerup=Thread(target=counterpowerup)
 
             global timevarpowerup
 
@@ -380,26 +358,26 @@ def game():
                     timerpowerup.start()
                 elif timevarpowerup > 0:
                     timevarpowerup += 15
-                powerup_state = 'away'
-                powerupX = 1000
-                ability = random.choice(['playerspeed', 'bulletspeed'])
+                powerup_state='away'
+                powerupX=1000
+                ability=random.choice(['playerspeed', 'bulletspeed'])
                 if ability == 'playerspeed':
-                    pwrup1 = 0.5
+                    pwrup1=0.5
                 elif ability == 'bulletspeed':
-                    pwrup2 = 1.5
+                    pwrup2=1.5
 
             if timevarpowerup == 0:
-                pwrup1 = 0
-                pwrup2 = 0
+                pwrup1=0
+                pwrup2=0
 
-            collision_player = collision_detection_player(
+            collision_player=collision_detection_player(
                 playerX, playerY, enemyX[i], enemyY[i])
 
             if enemyY[i] >= 616 or collision_player:
                 for j in range(enemy_count):
-                    enemyXchange[j] = 0
-                    enemyYchange[j] = 0
-                    enemyX[j] = 1000
+                    enemyXchange[j]=0
+                    enemyYchange[j]=0
+                    enemyX[j]=1000
                 game_over()
 
         if powerup_state == 'drop':
@@ -408,12 +386,12 @@ def game():
 
         if bullet_state == 'fire':
             fire_bullet(bulletX, bulletY)
-            bulletYchange = -1 - pwrup2
+            bulletYchange=-1 - pwrup2
             bulletY += bulletYchange
 
         if bulletY <= -32:
-            bulletY = 480
-            bullet_state = 'ready'
+            bulletY=480
+            bullet_state='ready'
 
         player(playerX, playerY)
         score_text(textX, textY)
@@ -421,6 +399,5 @@ def game():
             window.blit(font.render(
                 f'Powerup time: {timevarpowerup}', True, (255, 255, 255)), (textX, textY+30))
         pygame.display.update()
-
 
 menu()
