@@ -1,5 +1,5 @@
 #!/bin/env python3
-
+import pygame
 from platform import system
 import random
 from math import sqrt, pow
