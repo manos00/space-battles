@@ -1,2 +1,3 @@
 # pygame inf2
- computer sience assignment
+game i made as an computer sience assignment
+lots of bad practices but im to lazy to fix it now lol
